@@ -1,0 +1,21 @@
+{
+  "name": "ag-grid-vue3-slotted-example",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "ag-grid-community": "^35",
+    "ag-grid-vue3": "^35",
+    "ag-grid-vue3-slotted": "file:..",
+    "vue": "^3.5.32"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.5",
+    "vite": "^8.0.3"
+  }
+}
