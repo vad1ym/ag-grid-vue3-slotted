@@ -6,7 +6,7 @@ import dts from 'vite-plugin-dts'
 export default defineConfig({
   plugins: [
     vue(),
-    dts({ insertTypesEntry: true }),
+    dts({ tsconfigPath: './tsconfig.json', entryRoot: 'src' }),
   ],
   build: {
     lib: {

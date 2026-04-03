@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/src/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
@@ -19,7 +19,7 @@
     "type": "git",
     "url": "git+https://github.com/vad1ym/ag-grid-vue3-slotted.git"
   },
-"scripts": {
+  "scripts": {
     "build": "vite build",
     "typecheck": "vue-tsc --noEmit"
   },
@@ -40,6 +40,7 @@
     }
   },
   "devDependencies": {
+    "@types/node": "^25.5.2",
     "@vitejs/plugin-vue": "^6.0.5",
     "ag-grid-community": "^35",
     "ag-grid-vue3": "^35",
