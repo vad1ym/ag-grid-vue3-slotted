@@ -1,5 +1,8 @@
 # ag-grid-vue3-slotted
 
+[![npm](https://img.shields.io/npm/v/ag-grid-vue3-slotted)](https://www.npmjs.com/package/ag-grid-vue3-slotted)
+[![license](https://img.shields.io/npm/l/ag-grid-vue3-slotted)](https://github.com/vad1ym/ag-grid-vue3-slotted/blob/main/LICENSE)
+
 AG Grid Vue 3 wrapper that lets you render cell content using named Vue slots instead of writing `cellRenderer` components.
 
 ## Install

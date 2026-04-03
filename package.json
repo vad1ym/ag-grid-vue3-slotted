@@ -1,5 +1,6 @@
 {
   "name": "ag-grid-vue3-slotted",
+  "license": "MIT",
   "type": "module",
   "version": "1.1.0",
   "exports": {
