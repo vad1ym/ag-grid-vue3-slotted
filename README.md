@@ -61,27 +61,44 @@ import { AgGrid } from 'ag-grid-vue3-slotted'
 
 Slot names follow the pattern `col_<field>` where `<field>` matches the `field` property of the column definition.
 
+## Header slots
+
+You can also customize the header label using `header_<field>` slots. Only the text content of the header is replaced — all AG Grid controls (sort arrow, filter icon, column menu) remain intact.
+
+```vue
+<template #header_status="{ displayName }">
+  <em>{{ displayName }} ⚡</em>
+</template>
+```
+
+Slot names follow the pattern `header_<field>`. The slot receives [`IHeaderParams`](https://www.ag-grid.com/javascript-data-grid/component-header/) from `ag-grid-community`.
+
 ## Types
 
 ```ts
-// Slot render function for a column — receives ICellRendererParams from ag-grid-community
+// Slot render function for a column cell — receives ICellRendererParams
 type ColSlotFn<T> = (props: ICellRendererParams<T>) => any
 
-// Map of all available column slots derived from your row type T
+// Slot render function for a column header — receives IHeaderParams
+type HeaderSlotFn = (props: IHeaderParams) => any
+
+// Map of all available slots derived from your row type T
 type ColumnSlots<T> = {
   [K in keyof T as `col_${string & K}`]?: ColSlotFn<T>
+} & {
+  [K in keyof T as `header_${string & K}`]?: HeaderSlotFn
 }
 ```
 
-Both types are exported and can be imported from the package:
+All types are exported and can be imported from the package:
 
 ```ts
-import type { ColSlotFn, ColumnSlots } from 'ag-grid-vue3-slotted'
+import type { ColSlotFn, HeaderSlotFn, ColumnSlots } from 'ag-grid-vue3-slotted'
 ```
 
-## Slot vs cellRenderer priority
+## Slot vs explicit renderer priority
 
-If a column definition already has a `cellRenderer` set, it takes priority and the corresponding slot is ignored. Slots are only used when no `cellRenderer` is defined on the column.
+If a column definition already has `cellRenderer` or `headerComponent` set, it takes priority and the corresponding slot is ignored. Slots are only used when no renderer is defined on the column.
 
 ## Example
 

@@ -31,6 +31,10 @@ const theme = themeQuartz
       <template #col_price="{ data }">
         <strong>${{ data?.price.toFixed(2) }}</strong>
       </template>
+
+      <template #header_name>
+        <span style="color: blue">Custom Header</span>
+      </template>
     </AgGrid>
   </div>
 </template>

@@ -21,7 +21,10 @@
   },
   "scripts": {
     "build": "vite build",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "changelog": "changelogen",
+    "changelog:dry": "changelogen --no-output",
+    "release": "changelogen --release"
   },
   "peerDependencies": {
     "ag-grid-community": ">=35 <36",
@@ -44,6 +47,7 @@
     "@vitejs/plugin-vue": "^6.0.5",
     "ag-grid-community": "^35",
     "ag-grid-vue3": "^35",
+    "changelogen": "^0.6.2",
     "typescript": "^6.0.2",
     "vite": "^8.0.3",
     "vite-plugin-dts": "^4.5.4",
