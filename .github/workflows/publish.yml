@@ -1,25 +1,29 @@
-name: Publish
+name: Publish Package
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
+  id-token: write  # Required for OIDC trusted publishing
   contents: read
-  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
 
-      - run: npm ci
-      - run: npm publish
+      - name: Update npm to latest version for OIDC support
+        run: npm install -g npm@latest
+
+      - run: rm -f package-lock.json && npm install
+      - run: npm run build
+      - run: npm publish --provenance --access public
