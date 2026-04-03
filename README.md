@@ -5,14 +5,26 @@ AG Grid Vue 3 wrapper that lets you render cell content using named Vue slots in
 ## Install
 
 ```bash
-npm install ag-grid-vue3-slotted
+npm install ag-grid-vue3-slotted ag-grid-community ag-grid-vue3
 # or
-pnpm add ag-grid-vue3-slotted
+pnpm add ag-grid-vue3-slotted ag-grid-community ag-grid-vue3
 # or
-yarn add ag-grid-vue3-slotted
+yarn add ag-grid-vue3-slotted ag-grid-community ag-grid-vue3
+```
+
+## Setup
+
+Register AG Grid modules once in your app entry point (e.g. `main.ts`):
+
+```ts
+import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community'
+
+ModuleRegistry.registerModules([AllCommunityModule])
 ```
 
 ## Usage
+
+Instead of importing `AgGridVue` from `ag-grid-vue3`, import `AgGrid` from `ag-grid-vue3-slotted` — it wraps the original component and adds slot support.
 
 ```vue
 <script setup lang="ts">
@@ -70,6 +82,10 @@ import type { ColSlotFn, ColumnSlots } from 'ag-grid-vue3-slotted'
 ## Slot vs cellRenderer priority
 
 If a column definition already has a `cellRenderer` set, it takes priority and the corresponding slot is ignored. Slots are only used when no `cellRenderer` is defined on the column.
+
+## Example
+
+A full working example is available in the [example/](https://github.com/vad1ym/ag-grid-vue3-slotted/tree/main/example) directory.
 
 ## Peer dependencies
 
