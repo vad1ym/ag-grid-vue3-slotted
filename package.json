@@ -1,0 +1,48 @@
+{
+  "name": "ag-grid-vue3-slotted",
+  "type": "module",
+  "version": "0.1.0",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "peerDependencies": {
+    "ag-grid-community": ">=35 <36",
+    "ag-grid-vue3": ">=35 <36",
+    "vue": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "ag-grid-community": {
+      "optional": false
+    },
+    "ag-grid-vue3": {
+      "optional": false
+    },
+    "vue": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "latest",
+    "ag-grid-community": "^35",
+    "ag-grid-vue3": "^35",
+    "typescript": "latest",
+    "vite": "latest",
+    "vite-plugin-dts": "latest",
+    "vue": "^3",
+    "vue-tsc": "latest"
+  }
+}
