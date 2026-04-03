@@ -3,7 +3,7 @@ import type { GridOptions, ICellRendererParams } from 'ag-grid-community'
 import { AgGridVue } from 'ag-grid-vue3'
 import { defineComponent } from 'vue'
 
-export type ColSlotFn<T> = (props: { row: T }) => any
+export type ColSlotFn<T> = (props: ICellRendererParams<T>) => any
 
 export type ColumnSlots<T> = {
   [K in keyof T as `col_${string & K}`]?: ColSlotFn<T>
@@ -16,7 +16,7 @@ function resolveSlotRenderer(slotFn: ColSlotFn<T>) {
   return defineComponent({
     props: ['params'],
     setup: (p: { params: ICellRendererParams<T> }) => {
-      return () => slotFn({ row: p.params.data as T })
+      return () => slotFn(p.params)
     },
   })
 }

@@ -17,42 +17,31 @@ yarn add ag-grid-vue3-slotted
 ```vue
 <script setup lang="ts">
 import { AgGrid } from 'ag-grid-vue3-slotted'
-import type { ColDef } from 'ag-grid-community'
-
-interface Product {
-  name: string
-  price: number
-  status: 'active' | 'inactive'
-}
-
-const columnDefs: ColDef<Product>[] = [
-  { field: 'name', headerName: 'Name' },
-  { field: 'price', headerName: 'Price' },
-  { field: 'status', headerName: 'Status' },
-]
-
-const rowData: Product[] = [
-  { name: 'Widget', price: 9.99, status: 'active' },
-  { name: 'Gadget', price: 19.99, status: 'inactive' },
-]
 </script>
 
 <template>
   <AgGrid
     class="ag-theme-alpine"
     style="height: 400px"
-    :column-defs="columnDefs"
-    :row-data="rowData"
+    :column-defs="[
+      { field: 'name', headerName: 'Name' },
+      { field: 'price', headerName: 'Price' },
+      { field: 'status', headerName: 'Status' },
+    ]"
+    :row-data="[
+      { name: 'Widget', price: 9.99, status: 'active' },
+      { name: 'Gadget', price: 19.99, status: 'inactive' },
+    ]"
   >
-    <!-- slot name = col_<field> -->
-    <template #col_status="{ row }">
-      <span :class="row.status === 'active' ? 'text-green-600' : 'text-red-500'">
-        {{ row.status }}
+    <!-- slot name = col_<field>, receives ICellRendererParams -->
+    <template #col_status="{ data }">
+      <span :class="data?.status === 'active' ? 'text-green-600' : 'text-red-500'">
+        {{ data?.status }}
       </span>
     </template>
 
-    <template #col_price="{ row }">
-      <strong>${{ row.price.toFixed(2) }}</strong>
+    <template #col_price="{ data }">
+      <strong>${{ data?.price.toFixed(2) }}</strong>
     </template>
   </AgGrid>
 </template>
@@ -63,8 +52,8 @@ Slot names follow the pattern `col_<field>` where `<field>` matches the `field` 
 ## Types
 
 ```ts
-// Slot render function for a column
-type ColSlotFn<T> = (props: { row: T }) => any
+// Slot render function for a column — receives ICellRendererParams from ag-grid-community
+type ColSlotFn<T> = (props: ICellRendererParams<T>) => any
 
 // Map of all available column slots derived from your row type T
 type ColumnSlots<T> = {
