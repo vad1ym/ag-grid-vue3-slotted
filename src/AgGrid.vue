@@ -2,7 +2,7 @@
 import type { GridOptions, ICellRendererParams, IHeaderParams } from 'ag-grid-community'
 import type { ColSlotFn, ColumnSlots, HeaderSlotFn, SlottableColDef } from './types'
 import { AgGridVue } from 'ag-grid-vue3'
-import { defineComponent } from 'vue'
+import { defineComponent, h } from 'vue'
 
 const { columnDefs, ...props } = defineProps<Omit<GridOptions<T>, 'columnDefs'> & { columnDefs?: SlottableColDef<T, F, I>[] }>()
 const slots = defineSlots<ColumnSlots<T, F, I>>()
@@ -11,7 +11,7 @@ function resolveSlotRenderer(slotFn: ColSlotFn<T>) {
   return defineComponent({
     props: ['params'],
     setup: (p: { params: ICellRendererParams<T> }) => {
-      return () => slotFn(p.params)
+      return () => h('div', { style: 'display:contents' }, slotFn(p.params))
     },
   })
 }
@@ -20,7 +20,7 @@ function resolveSlotHeader(slotFn: HeaderSlotFn) {
   return defineComponent({
     props: ['params'],
     setup: (p: { params: IHeaderParams }) => {
-      return () => slotFn(p.params)
+      return () => h('div', { style: 'display:contents' }, slotFn(p.params))
     },
   })
 }
