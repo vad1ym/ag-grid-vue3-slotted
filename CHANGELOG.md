@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v1.1.2
+
+[compare changes](https://github.com/vad1ym/ag-grid-vue3-slotted/compare/v1.1.0...v1.1.2)
+
+### 🩹 Fixes
+
+- Allow type safe custom columns slots by colId ([096dfec](https://github.com/vad1ym/ag-grid-vue3-slotted/commit/096dfec))
+
+### 🏡 Chore
+
+- Add license ([e49ab85](https://github.com/vad1ym/ag-grid-vue3-slotted/commit/e49ab85))
+
+### ❤️ Contributors
+
+- Vadym Bulakh ([@vad1ym](https://github.com/vad1ym))
+
 ## v1.1.0
 
 [compare changes](https://github.com/vad1ym/ag-grid-vue3-slotted/compare/v1.0.1...v1.1.0)
