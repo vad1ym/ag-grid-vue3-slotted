@@ -15,6 +15,7 @@ const theme = themeQuartz
         { field: 'name', headerName: 'Name' },
         { field: 'price', headerName: 'Price' },
         { field: 'status', headerName: 'Status' },
+        { colId: 'actions', headerName: 'Actions' },
       ]"
       :row-data="[
         { name: 'Widget', price: 9.99, status: 'active' },
@@ -30,6 +31,10 @@ const theme = themeQuartz
 
       <template #col_price="{ data }">
         <strong>${{ data?.price.toFixed(2) }}</strong>
+      </template>
+
+      <template #col_actions="{ data }">
+        <button>Click {{ data?.name }}</button>
       </template>
 
       <template #header_name>

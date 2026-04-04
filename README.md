@@ -42,6 +42,7 @@ import { AgGrid } from 'ag-grid-vue3-slotted'
       { field: 'name', headerName: 'Name' },
       { field: 'price', headerName: 'Price' },
       { field: 'status', headerName: 'Status' },
+      { colId: 'actions', headerName: 'Actions' },
     ]"
     :row-data="[
       { name: 'Widget', price: 9.99, status: 'active' },
@@ -58,46 +59,34 @@ import { AgGrid } from 'ag-grid-vue3-slotted'
     <template #col_price="{ data }">
       <strong>${{ data?.price.toFixed(2) }}</strong>
     </template>
+
+    <!-- slot name = col_<colId> when the column has no field -->
+    <template #col_actions="{ data }">
+      <button @click="remove(data)">Delete</button>
+    </template>
   </AgGrid>
 </template>
 ```
 
-Slot names follow the pattern `col_<field>` where `<field>` matches the `field` property of the column definition.
+Slot names follow the pattern `col_<field>` where `<field>` matches the `field` property of the column definition. For columns without a `field` (e.g. action columns), use `col_<colId>` where `<colId>` matches the `colId` property instead.
 
 ## Header slots
 
 You can also customize the header label using `header_<field>` slots. Only the text content of the header is replaced — all AG Grid controls (sort arrow, filter icon, column menu) remain intact.
 
 ```vue
+<!-- slot name = header_<field>, receives IHeaderParams -->
 <template #header_status="{ displayName }">
   <em>{{ displayName }} ⚡</em>
 </template>
+
+<!-- slot name = header_<colId> when the column has no field -->
+<template #header_actions="{ displayName }">
+  <em>{{ displayName }}</em>
+</template>
 ```
 
-Slot names follow the pattern `header_<field>`. The slot receives [`IHeaderParams`](https://www.ag-grid.com/javascript-data-grid/component-header/) from `ag-grid-community`.
-
-## Types
-
-```ts
-// Slot render function for a column cell — receives ICellRendererParams
-type ColSlotFn<T> = (props: ICellRendererParams<T>) => any
-
-// Slot render function for a column header — receives IHeaderParams
-type HeaderSlotFn = (props: IHeaderParams) => any
-
-// Map of all available slots derived from your row type T
-type ColumnSlots<T> = {
-  [K in keyof T as `col_${string & K}`]?: ColSlotFn<T>
-} & {
-  [K in keyof T as `header_${string & K}`]?: HeaderSlotFn
-}
-```
-
-All types are exported and can be imported from the package:
-
-```ts
-import type { ColSlotFn, HeaderSlotFn, ColumnSlots } from 'ag-grid-vue3-slotted'
-```
+Slot names follow the pattern `header_<field>`, or `header_<colId>` for columns without a `field`. The slot receives [`IHeaderParams`](https://www.ag-grid.com/javascript-data-grid/component-header/) from `ag-grid-community`.
 
 ## Slot vs explicit renderer priority
 

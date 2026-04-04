@@ -1,19 +1,11 @@
-<script lang="ts" setup generic="T">
+<script lang="ts" setup generic="T, F extends string = string, I extends string = string">
 import type { GridOptions, ICellRendererParams, IHeaderParams } from 'ag-grid-community'
+import type { ColSlotFn, ColumnSlots, HeaderSlotFn, SlottableColDef } from './types'
 import { AgGridVue } from 'ag-grid-vue3'
 import { defineComponent } from 'vue'
 
-export type ColSlotFn<T> = (props: ICellRendererParams<T>) => any
-export type HeaderSlotFn = (props: IHeaderParams) => any
-
-export type ColumnSlots<T> = {
-  [K in keyof T as `col_${string & K}`]?: ColSlotFn<T>
-} & {
-  [K in keyof T as `header_${string & K}`]?: HeaderSlotFn
-}
-
-const { columnDefs, ...props } = defineProps<GridOptions<T>>()
-const slots = defineSlots<ColumnSlots<T>>()
+const { columnDefs, ...props } = defineProps<Omit<GridOptions<T>, 'columnDefs'> & { columnDefs?: SlottableColDef<T, F, I>[] }>()
+const slots = defineSlots<ColumnSlots<T, F, I>>()
 
 function resolveSlotRenderer(slotFn: ColSlotFn<T>) {
   return defineComponent({
@@ -37,10 +29,11 @@ function resolveCellRenderer(col: NonNullable<typeof columnDefs>[number]) {
   if ('cellRenderer' in col && col.cellRenderer)
     return col.cellRenderer
 
-  if (!('field' in col) || !col.field)
+  const key = col.colId || col.field
+  if (!key)
     return undefined
 
-  const slotFn = slots[`col_${col.field}` as keyof ColumnSlots<T>] as ColSlotFn<T> | undefined
+  const slotFn = slots[`col_${key}` as keyof ColumnSlots<T, F, I>] as ColSlotFn<T> | undefined
 
   if (slotFn)
     return resolveSlotRenderer(slotFn)
@@ -50,10 +43,11 @@ function resolveHeaderComponent(col: NonNullable<typeof columnDefs>[number]) {
   if ('headerComponent' in col && col.headerComponent)
     return col.headerComponent
 
-  if (!('field' in col) || !col.field)
+  const key = col.colId || col.field
+  if (!key)
     return undefined
 
-  const slotFn = slots[`header_${col.field}` as keyof ColumnSlots<T>] as HeaderSlotFn | undefined
+  const slotFn = slots[`header_${key}` as keyof ColumnSlots<T, F, I>] as HeaderSlotFn | undefined
 
   if (slotFn)
     return resolveSlotHeader(slotFn)
