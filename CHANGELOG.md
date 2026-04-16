@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.0
+
+[compare changes](https://github.com/vad1ym/ag-grid-vue3-slotted/compare/v1.1.3...v1.2.0)
+
+### 🚀 Enhancements
+
+- Add no-rows slot support ([ec95026](https://github.com/vad1ym/ag-grid-vue3-slotted/commit/ec95026))
+
+### ❤️ Contributors
+
+- Vadym Bulakh ([@vad1ym](https://github.com/vad1ym))
+
 ## v1.1.3
 
 [compare changes](https://github.com/vad1ym/ag-grid-vue3-slotted/compare/v1.1.2...v1.1.3)
