@@ -1,7 +1,8 @@
-import type { ColDef, ICellRendererParams, IHeaderParams } from 'ag-grid-community'
+import type { ColDef, ICellRendererParams, IHeaderParams, INoRowsOverlayParams } from 'ag-grid-community'
 
 export type ColSlotFn<T> = (props: ICellRendererParams<T>) => any
 export type HeaderSlotFn = (props: IHeaderParams) => any
+export type NoRowsSlotFn<T> = (props: INoRowsOverlayParams<T>) => any
 
 export type SlottableColDef<T, F extends string = string, I extends string = string> =
   Omit<ColDef<T>, 'field' | 'colId'> & { field?: F; colId?: I }
@@ -14,4 +15,6 @@ export type ColumnSlots<T, F extends string = string, I extends string = string>
   [K in F as `header_${K}`]?: HeaderSlotFn
 } & {
   [K in I as `header_${K}`]?: HeaderSlotFn
+} & {
+  'no-rows'?: NoRowsSlotFn<T>
 }

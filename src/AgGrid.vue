@@ -1,6 +1,6 @@
 <script lang="ts" setup generic="T, F extends string = string, I extends string = string">
-import type { GridOptions, ICellRendererParams, IHeaderParams } from 'ag-grid-community'
-import type { ColSlotFn, ColumnSlots, HeaderSlotFn, SlottableColDef } from './types'
+import type { GridOptions, ICellRendererParams, IHeaderParams, INoRowsOverlayParams } from 'ag-grid-community'
+import type { ColSlotFn, ColumnSlots, HeaderSlotFn, NoRowsSlotFn, SlottableColDef } from './types'
 import { AgGridVue } from 'ag-grid-vue3'
 import { defineComponent, h } from 'vue'
 
@@ -53,6 +53,15 @@ function resolveHeaderComponent(col: NonNullable<typeof columnDefs>[number]) {
     return resolveSlotHeader(slotFn)
 }
 
+function resolveNoRowsOverlay(slotFn: NoRowsSlotFn<T>) {
+  return defineComponent({
+    props: ['params'],
+    setup: (p: { params: INoRowsOverlayParams<T> }) => {
+      return () => h('div', { style: 'display:contents' }, slotFn(p.params))
+    },
+  })
+}
+
 function makeColumnDefs() {
   return columnDefs?.map(col => ({
     ...col,
@@ -60,8 +69,20 @@ function makeColumnDefs() {
     headerComponent: resolveHeaderComponent(col),
   }))
 }
+
+function makeGridProps() {
+  const noRowsSlot = slots['no-rows']
+
+  if (props.noRowsOverlayComponent || !noRowsSlot)
+    return props
+
+  return {
+    ...props,
+    noRowsOverlayComponent: resolveNoRowsOverlay(noRowsSlot),
+  }
+}
 </script>
 
 <template>
-  <AgGridVue v-bind="{ ...props, columnDefs: makeColumnDefs() }" />
+  <AgGridVue v-bind="{ ...makeGridProps(), columnDefs: makeColumnDefs() }" />
 </template>

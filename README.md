@@ -64,6 +64,11 @@ import { AgGrid } from 'ag-grid-vue3-slotted'
     <template #col_actions="{ data }">
       <button @click="remove(data)">Delete</button>
     </template>
+
+    <!-- slot name = no-rows, rendered inside noRowsOverlayComponent -->
+    <template #no-rows>
+      <div>No rows to display.</div>
+    </template>
   </AgGrid>
 </template>
 ```
@@ -88,9 +93,21 @@ You can also customize the header label using `header_<field>` slots. Only the t
 
 Slot names follow the pattern `header_<field>`, or `header_<colId>` for columns without a `field`. The slot receives [`IHeaderParams`](https://www.ag-grid.com/javascript-data-grid/component-header/) from `ag-grid-community`.
 
+## No-Rows slot
+
+Use the `no-rows` slot to replace AG Grid's default no-rows overlay with Vue template content.
+
+```vue
+<template #no-rows>
+  <div>Nothing here yet.</div>
+</template>
+```
+
+The `no-rows` slot is wired into `noRowsOverlayComponent`. If `noRowsOverlayComponent` is already set on the grid options, that explicit component still takes priority.
+
 ## Slot vs explicit renderer priority
 
-If a column definition already has `cellRenderer` or `headerComponent` set, it takes priority and the corresponding slot is ignored. Slots are only used when no renderer is defined on the column.
+If a column definition already has `cellRenderer` or `headerComponent` set, it takes priority and the corresponding slot is ignored. Slots are only used when no renderer is defined on the column. Likewise, the `no-rows` slot is ignored when `noRowsOverlayComponent` is already provided explicitly.
 
 ## Example
 
