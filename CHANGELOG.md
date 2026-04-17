@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.1
+
+[compare changes](https://github.com/vad1ym/ag-grid-vue3-slotted/compare/v1.2.0...v1.2.1)
+
+### 🩹 Fixes
+
+- Nested columns slots doesnt work ([9721e33](https://github.com/vad1ym/ag-grid-vue3-slotted/commit/9721e33))
+
+### ❤️ Contributors
+
+- Vadym Bulakh ([@vad1ym](https://github.com/vad1ym))
+
 ## v1.2.0
 
 [compare changes](https://github.com/vad1ym/ag-grid-vue3-slotted/compare/v1.1.3...v1.2.0)
