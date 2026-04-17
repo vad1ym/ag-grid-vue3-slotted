@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="T, F extends string = string, I extends string = string">
-import type { GridOptions, ICellRendererParams, IHeaderParams, INoRowsOverlayParams } from 'ag-grid-community'
+import type { ColDef, GridOptions, ICellRendererParams, IHeaderParams, INoRowsOverlayParams } from 'ag-grid-community'
 import type { ColSlotFn, ColumnSlots, HeaderSlotFn, NoRowsSlotFn, SlottableColDef } from './types'
 import { AgGridVue } from 'ag-grid-vue3'
 import { defineComponent, h } from 'vue'
@@ -25,7 +25,13 @@ function resolveSlotHeader(slotFn: HeaderSlotFn) {
   })
 }
 
-function resolveCellRenderer(col: NonNullable<typeof columnDefs>[number]) {
+type LeafColDef = Omit<ColDef<T>, 'field' | 'colId'> & { field?: F; colId?: I }
+
+function isLeafCol(col: NonNullable<typeof columnDefs>[number]): col is LeafColDef {
+  return !('children' in col)
+}
+
+function resolveCellRenderer(col: LeafColDef) {
   if ('cellRenderer' in col && col.cellRenderer)
     return col.cellRenderer
 
@@ -39,7 +45,7 @@ function resolveCellRenderer(col: NonNullable<typeof columnDefs>[number]) {
     return resolveSlotRenderer(slotFn)
 }
 
-function resolveHeaderComponent(col: NonNullable<typeof columnDefs>[number]) {
+function resolveHeaderComponent(col: LeafColDef) {
   if ('headerComponent' in col && col.headerComponent)
     return col.headerComponent
 
@@ -62,12 +68,22 @@ function resolveNoRowsOverlay(slotFn: NoRowsSlotFn<T>) {
   })
 }
 
-function makeColumnDefs() {
-  return columnDefs?.map(col => ({
+function processCol(col: NonNullable<typeof columnDefs>[number]): any {
+  if (!isLeafCol(col)) {
+    return {
+      ...col,
+      children: col.children.map(processCol),
+    }
+  }
+  return {
     ...col,
     cellRenderer: resolveCellRenderer(col),
     headerComponent: resolveHeaderComponent(col),
-  }))
+  }
+}
+
+function makeColumnDefs() {
+  return columnDefs?.map(processCol)
 }
 
 function makeGridProps() {

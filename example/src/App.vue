@@ -50,8 +50,13 @@ function showEmptyState() {
       class="demo__grid"
       :column-defs="[
         { field: 'name', headerName: 'Name' },
-        { field: 'price', headerName: 'Price' },
-        { field: 'status', headerName: 'Status' },
+        {
+          headerName: 'Details',
+          children: [
+            { field: 'price', headerName: 'Price' },
+            { field: 'status', headerName: 'Status' },
+          ],
+        },
         { colId: 'actions', headerName: 'Actions' },
       ]"
       :row-data="rowData"
