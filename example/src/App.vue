@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { AgGrid } from 'ag-grid-vue3-slotted'
+import { computed, ref } from 'vue'
+import { AgGrid } from '../../src/index' // ag-grid-vue3-slotted
 import { themeQuartz } from 'ag-grid-community'
+import NestedComponent from './NestedComponent.vue'
 
 type ProductRow = {
   name: string
@@ -9,21 +10,27 @@ type ProductRow = {
   status: 'active' | 'inactive'
 }
 
+const baseCoef = ref(1)
+const showData = ref(true)
+
 const theme = themeQuartz
 
-const allRows: ProductRow[] = [
-  { name: 'Widget', price: 9.99, status: 'active' },
+const allRows = computed<ProductRow[]>(() => [
+  { name: 'Widget', price: 9.99 * baseCoef.value, status: 'active' },
   { name: 'Gadget', price: 19.99, status: 'inactive' },
-]
+  { name: 'Sprocket', price: 4.50, status: 'active' },
+  { name: 'Cog', price: 12.00, status: 'inactive' },
+  { name: 'Bolt', price: 0.99, status: 'active' },
+  { name: 'Nut', price: 0.49, status: 'active' },
+  { name: 'Washer', price: 0.25, status: 'inactive' },
+])
 
-const rowData = ref<ProductRow[]>([...allRows])
-
-function showData() {
-  rowData.value = [...allRows]
+function showDataState() {
+  showData.value = true
 }
 
 function showEmptyState() {
-  rowData.value = []
+  showData.value = false
 }
 </script>
 
@@ -36,18 +43,22 @@ function showEmptyState() {
       </div>
 
       <div class="demo__actions">
-        <button type="button" @click="showData">
+        <button type="button" @click="showDataState">
           Show data
         </button>
         <button type="button" @click="showEmptyState">
           Show empty state
         </button>
+        <button @click="baseCoef++">+ {{ baseCoef }}</button>
+        <button @click="baseCoef--">- {{ baseCoef }}</button>
       </div>
     </div>
 
     <AgGrid
       :theme="theme"
       class="demo__grid"
+      :get-row-id="(params) => params.data.name"
+      :row-selection="{ mode: 'multiRow' as const, checkboxes: true, selectAll: 'currentPage' as const }"
       :column-defs="[
         { field: 'name', headerName: 'Name' },
         {
@@ -59,7 +70,7 @@ function showEmptyState() {
         },
         { colId: 'actions', headerName: 'Actions' },
       ]"
-      :row-data="rowData"
+      :row-data="showData ? allRows : []"
     >
       <template #col_status="{ data }">
         <span :style="{ color: data?.status === 'active' ? 'green' : 'red' }">
@@ -72,9 +83,7 @@ function showEmptyState() {
       </template>
 
       <template #col_actions="{ data }">
-        <button type="button">
-          Click {{ data?.name }}
-        </button>
+        <NestedComponent :initial-value="data?.price || 0" />
       </template>
 
       <template #header_name>

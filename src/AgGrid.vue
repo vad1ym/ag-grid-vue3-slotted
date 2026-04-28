@@ -1,38 +1,109 @@
 <script lang="ts" setup generic="T, F extends string = string, I extends string = string">
-import type { ColDef, GridOptions, ICellRendererParams, IHeaderParams, INoRowsOverlayParams } from 'ag-grid-community'
-import type { ColSlotFn, ColumnSlots, HeaderSlotFn, NoRowsSlotFn, SlottableColDef } from './types'
+import type {
+  ColDef,
+  GridOptions,
+  ICellRendererParams,
+  IHeaderParams,
+  INoRowsOverlayParams,
+} from 'ag-grid-community'
+import type {
+  ColSlotFn,
+  ColumnSlots,
+  HeaderSlotFn,
+  NoRowsSlotFn,
+  SlottableColDef,
+} from './types'
 import { AgGridVue } from 'ag-grid-vue3'
-import { defineComponent, h } from 'vue'
+import { computed, defineComponent, h } from 'vue'
 
-const { columnDefs, ...props } = defineProps<Omit<GridOptions<T>, 'columnDefs'> & { columnDefs?: SlottableColDef<T, F, I>[] }>()
+type Props = Omit<GridOptions<T>, 'columnDefs'> & {
+  columnDefs?: SlottableColDef<T, F, I>[]
+}
+
+type LeafColDef = Omit<ColDef<T>, 'field' | 'colId'> & {
+  field?: F
+  colId?: I
+}
+
+type AnySlotParams =
+  | ICellRendererParams<T>
+  | IHeaderParams
+  | INoRowsOverlayParams<T>
+
+const props = defineProps<Props>()
 const slots = defineSlots<ColumnSlots<T, F, I>>()
 
-function resolveSlotRenderer(slotFn: ColSlotFn<T>) {
+const cellRendererCache = new WeakMap<ColSlotFn<T>, ReturnType<typeof defineComponent>>()
+const headerRendererCache = new WeakMap<HeaderSlotFn, ReturnType<typeof defineComponent>>()
+const noRowsOverlayCache = new WeakMap<NoRowsSlotFn<T>, ReturnType<typeof defineComponent>>()
+
+function createSlotComponent(
+  name: string,
+  slotFn: (params: AnySlotParams) => any,
+) {
   return defineComponent({
+    name,
     props: ['params'],
-    setup: (p: { params: ICellRendererParams<T> }) => {
-      return () => h('div', { style: 'display:contents' }, slotFn(p.params))
+    setup(props, { expose }) {
+      expose({
+        refresh() {
+          return true
+        },
+      })
+
+      return () => h('div', { style: 'display:contents' }, slotFn(props.params))
     },
   })
+}
+
+function resolveSlotRenderer(slotFn: ColSlotFn<T>) {
+  const cached = cellRendererCache.get(slotFn)
+  if (cached)
+    return cached
+
+  const component = createSlotComponent(
+    'AgGridSlotCellRenderer',
+    slotFn as unknown as (params: AnySlotParams) => any,
+  )
+
+  cellRendererCache.set(slotFn, component)
+  return component
 }
 
 function resolveSlotHeader(slotFn: HeaderSlotFn) {
-  return defineComponent({
-    props: ['params'],
-    setup: (p: { params: IHeaderParams }) => {
-      return () => h('div', { style: 'display:contents' }, slotFn(p.params))
-    },
-  })
+  const cached = headerRendererCache.get(slotFn)
+  if (cached)
+    return cached
+
+  const component = createSlotComponent(
+    'AgGridSlotHeader',
+    slotFn as unknown as (params: AnySlotParams) => any,
+  )
+
+  headerRendererCache.set(slotFn, component)
+  return component
 }
 
-type LeafColDef = Omit<ColDef<T>, 'field' | 'colId'> & { field?: F; colId?: I }
+function resolveNoRowsOverlay(slotFn: NoRowsSlotFn<T>) {
+  const cached = noRowsOverlayCache.get(slotFn)
+  if (cached)
+    return cached
 
-function isLeafCol(col: NonNullable<typeof columnDefs>[number]): col is LeafColDef {
+  const component = createSlotComponent(
+    'AgGridSlotNoRowsOverlay',
+    slotFn as unknown as (params: AnySlotParams) => any,
+  )
+
+  noRowsOverlayCache.set(slotFn, component)
+  return component
+}
+
+function isLeafCol(col: NonNullable<Props['columnDefs']>[number]): col is LeafColDef {
   return !('children' in col)
 }
 
 function resolveCellRenderer(col: LeafColDef) {
-  if ('cellRenderer' in col && col.cellRenderer)
+  if (col.cellRenderer)
     return col.cellRenderer
 
   const key = col.colId || col.field
@@ -41,12 +112,11 @@ function resolveCellRenderer(col: LeafColDef) {
 
   const slotFn = slots[`col_${key}` as keyof ColumnSlots<T, F, I>] as ColSlotFn<T> | undefined
 
-  if (slotFn)
-    return resolveSlotRenderer(slotFn)
+  return slotFn ? resolveSlotRenderer(slotFn) : undefined
 }
 
 function resolveHeaderComponent(col: LeafColDef) {
-  if ('headerComponent' in col && col.headerComponent)
+  if (col.headerComponent)
     return col.headerComponent
 
   const key = col.colId || col.field
@@ -55,50 +125,49 @@ function resolveHeaderComponent(col: LeafColDef) {
 
   const slotFn = slots[`header_${key}` as keyof ColumnSlots<T, F, I>] as HeaderSlotFn | undefined
 
-  if (slotFn)
-    return resolveSlotHeader(slotFn)
+  return slotFn ? resolveSlotHeader(slotFn) : undefined
 }
 
-function resolveNoRowsOverlay(slotFn: NoRowsSlotFn<T>) {
-  return defineComponent({
-    props: ['params'],
-    setup: (p: { params: INoRowsOverlayParams<T> }) => {
-      return () => h('div', { style: 'display:contents' }, slotFn(p.params))
-    },
-  })
-}
-
-function processCol(col: NonNullable<typeof columnDefs>[number]): any {
+function processCol(col: NonNullable<Props['columnDefs']>[number]): any {
   if (!isLeafCol(col)) {
     return {
       ...col,
       children: col.children.map(processCol),
     }
   }
+
+  const cellRenderer = resolveCellRenderer(col)
+  const headerComponent = resolveHeaderComponent(col)
+
   return {
     ...col,
-    cellRenderer: resolveCellRenderer(col),
-    headerComponent: resolveHeaderComponent(col),
+    ...(cellRenderer ? { cellRenderer } : {}),
+    ...(headerComponent ? { headerComponent } : {}),
   }
 }
 
-function makeColumnDefs() {
-  return columnDefs?.map(processCol)
-}
+const resolvedColumnDefs = computed(() => {
+  return props.columnDefs?.map(processCol)
+})
 
-function makeGridProps() {
+const resolvedGridProps = computed(() => {
+  const { columnDefs, ...gridProps } = props
+
   const noRowsSlot = slots['no-rows']
 
-  if (props.noRowsOverlayComponent || !noRowsSlot)
-    return props
+  if (gridProps.noRowsOverlayComponent || !noRowsSlot)
+    return gridProps
 
   return {
-    ...props,
+    ...gridProps,
     noRowsOverlayComponent: resolveNoRowsOverlay(noRowsSlot),
   }
-}
+})
 </script>
 
 <template>
-  <AgGridVue v-bind="{ ...makeGridProps(), columnDefs: makeColumnDefs() }" />
+  <AgGridVue
+    v-bind="resolvedGridProps"
+    :column-defs="resolvedColumnDefs"
+  />
 </template>
