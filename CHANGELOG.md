@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v1.2.2
+
+[compare changes](https://github.com/vad1ym/ag-grid-vue3-slotted/compare/v1.2.1...v1.2.2)
+
+### 🩹 Fixes
+
+- Add renderers caching to avoid unnecessary rerenders ([83c7f1d](https://github.com/vad1ym/ag-grid-vue3-slotted/commit/83c7f1d))
+
+### ❤️ Contributors
+
+- Vadym Bulakh ([@vad1ym](https://github.com/vad1ym))
+
 ## v1.2.1
 
 [compare changes](https://github.com/vad1ym/ag-grid-vue3-slotted/compare/v1.2.0...v1.2.1)
